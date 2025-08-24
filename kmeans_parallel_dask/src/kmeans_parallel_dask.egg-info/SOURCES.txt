@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+src/kmeans_parallel_dask/__init__.py
+src/kmeans_parallel_dask/kmeans_parallel.py
+src/kmeans_parallel_dask.egg-info/PKG-INFO
+src/kmeans_parallel_dask.egg-info/SOURCES.txt
+src/kmeans_parallel_dask.egg-info/dependency_links.txt
+src/kmeans_parallel_dask.egg-info/requires.txt
+src/kmeans_parallel_dask.egg-info/top_level.txt
+tests/test_basic.py
