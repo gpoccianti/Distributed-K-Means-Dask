@@ -24,3 +24,4 @@ We also develop an **alternative version of K-Means||**, aiming to identify the 
 
 ## Datasets
 - We tested our kmeans_dask library with a synthetic dataset based on dask_ml function **make_blobs**
+-[RCV1dataset](https://scikit-learn.org/stable/datasets/real_world.html#rcv1-dataset)
