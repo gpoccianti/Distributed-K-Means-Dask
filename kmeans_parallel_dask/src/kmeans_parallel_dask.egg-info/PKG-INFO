@@ -1,21 +1,13 @@
 Metadata-Version: 2.4
 Name: kmeans_parallel_dask
 Version: 0.1.0
-Summary: K-means|| (k-means parallel) initialization and Lloyd steps on Dask arrays
-Author: Your Name
-License: MIT
-Project-URL: Homepage, https://example.com
-Project-URL: Repository, https://example.com/repo
-Keywords: dask,clustering,kmeans,parallel,k-means||
+Summary: K-means|| init and Lloyd steps on Dask arrays
 Requires-Python: >=3.9
 Description-Content-Type: text/markdown
-Requires-Dist: dask[array]>=2024.5.0
-Requires-Dist: dask-ml>=2024.4.4
-Requires-Dist: numpy>=1.24
-Provides-Extra: dev
-Requires-Dist: pytest>=7; extra == "dev"
-Requires-Dist: ruff>=0.5; extra == "dev"
-Requires-Dist: mypy>=1.8; extra == "dev"
+Requires-Dist: numpy
+Requires-Dist: dask[array]>=2024.1.0
+Requires-Dist: dask-ml>=2024.3.0
+Requires-Dist: scikit-learn>=1.1
 
 # kmeans_parallel_dask
 
