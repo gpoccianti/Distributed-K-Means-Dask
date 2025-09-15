@@ -2,7 +2,7 @@
 import numpy as np
 import dask.array as da
 from dask_ml.metrics import pairwise_distances, pairwise_distances_argmin_min
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans as SklearnKMeans
 
 def phi(X,C):
     """
@@ -37,7 +37,7 @@ def update_centroids(X,lab,k):
     - dataset X
     - labels of the clusters lab
     - number of clusters k
-    Output
+    Output:
     - New centroids C
     """
 
@@ -59,7 +59,12 @@ def kmeans__init(X: da.Array, k: int, l: int, random_state=42):
     C : np.ndarray, shape (k, n_features)
         Initial centroids
     """
-    rng = np.random.default_rng(random_state)
+    
+    # 0) # RandomState for reproducibility
+    ss = np.random.SeedSequence(random_state)
+    child_seeds = ss.spawn(2)
+    rng = np.random.default_rng(child_seeds[0])        # for Numpy
+    rs  = da.random.RandomState(child_seeds[1].entropy) # for Dask
 
     n = X.shape[0]
     # 1) pick first center
@@ -70,16 +75,20 @@ def kmeans__init(X: da.Array, k: int, l: int, random_state=42):
     psi = phi(X, C).compute()
     if psi <= 0:
         return C if len(C) == k else np.repeat(C, k, axis=0)[:k]
-
+    
+    
+    
     # 3) O(log ψ) rounds
     t = max(1, int(np.ceil(np.log(psi))))
     for _ in range(t):
-        d2min = pairwise_distances(X, C, metric="sqeuclidean").min(1)  #.compute()
-        p = np.clip(l * d2min / psi, 0.0, 1.0)
-        samples = da.random.uniform(size=len(p), chunks=p.chunks) < p
+        d2min = pairwise_distances(X, C, metric="sqeuclidean").min(1)
+        p = da.clip(l * d2min / psi, 0.0, 1.0)
+        # campionamento bernoulliano con RandomState
+        samples = rs.random_sample(size=p.shape, chunks=p.chunks) < p
+        # indici dei True
         mask = da.where(samples)[0].compute()
-        mask = sorted(mask)   #https://github.com/dask/dask-ml/issues/39
-        if np.any(mask):
+        
+        if mask.size:
             C = np.vstack([C, X[mask].compute()])
         psi = phi(X, C).compute()
         if psi <= 0:
@@ -92,7 +101,7 @@ def kmeans__init(X: da.Array, k: int, l: int, random_state=42):
 
     # 8) recluster down to k
     k = min(k, C.shape[0])
-    km = KMeans(n_clusters=k, n_init=10, random_state=random_state)
+    km = SklearnKMeans(n_clusters=k, n_init=10, random_state=random_state)
     km.fit(C, sample_weight=weights)
     return km.cluster_centers_
 
